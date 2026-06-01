@@ -130,9 +130,8 @@ function(x, INDEX, FUN, ...)
     xx <- do.call(rbind, xx)
     
     # If xx is an xts object, we shouldn't reclass it to the endpoints.
-    # Joshua said: "We'll always rbind() the rollapply() output if it's an xts object...
     # period.apply() should always rbind() the result when FUN returns a 1-row matrix. 
-    # The index should be set to the last index value in the period."
+    # The index should be set to the last index value in the period.
     if (!is.xts(xx)) {
       if(is.null(colnames(xx)) && NCOL(x)==NCOL(xx))
         colnames(xx) <- colnames(x)
