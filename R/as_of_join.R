@@ -12,7 +12,7 @@ as_of_join <- function(x, y, ..., join = c("full", "left", "right"), return_side
   
   # The highly optimized C path for left joins
   if (join == "left") {
-    idx <- .Call("as_of_indices", .index(x), .index(y), PACKAGE = "xts")
+    idx <- .Call(C_as_of_indices, .index(x), .index(y))
     y_mat <- coredata(y)
     
     # Subset coredata of y based on matched indices. NA indices return NA rows.
@@ -24,12 +24,12 @@ as_of_join <- function(x, y, ..., join = c("full", "left", "right"), return_side
     # Create the mapped y with the index of x
     y_xts <- xts(y_mapped, index(x))
     
-    # Combine them. We use merge.xts with join="inner" or just cbind
+    # Combine them using merge.xts
     out <- merge.xts(x, y_xts, join = "inner", retside = return_side)
     return(out)
   } else if (join == "right") {
     # Right join is just a left join with arguments swapped
-    idx <- .Call("as_of_indices", .index(y), .index(x), PACKAGE = "xts")
+    idx <- .Call(C_as_of_indices, .index(y), .index(x))
     x_mat <- coredata(x)
     x_mapped <- x_mat[idx, , drop = FALSE]
     colnames(x_mapped) <- colnames(x)

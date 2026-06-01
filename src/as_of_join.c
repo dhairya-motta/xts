@@ -9,7 +9,7 @@
  */
 SEXP as_of_indices(SEXP x_idx, SEXP y_idx) {
     if (TYPEOF(x_idx) != REALSXP || TYPEOF(y_idx) != REALSXP) {
-        // Fallback or error; xts indices are typically REALSXP
+        /* xts indices are guaranteed to be REALSXP */
         error("xts indices must be REALSXP");
     }
     
@@ -26,20 +26,21 @@ SEXP as_of_indices(SEXP x_idx, SEXP y_idx) {
     for (int i = 0; i < nx; i++) {
         double current_x = rx[i];
         
-        // Advance j while the NEXT element in y is still <= current_x
-        // We use j+1 to peek ahead.
+        /* Advance j while the element in y is <= current_x */
         while (j < ny && ry[j] <= current_x) {
             j++;
         }
         
-        // At this point, ry[j] > current_x (or j == ny).
-        // So the largest index <= current_x is j - 1.
+        /* 
+         * At this point, ry[j] > current_x (or j == ny).
+         * So the largest valid index <= current_x is j - 1.
+         */
         if (j == 0) {
-            // All elements in y are > current_x
+            /* All elements in y are > current_x */
             ires[i] = NA_INTEGER;
         } else {
-            // Convert to 1-based index for R
-            ires[i] = j; // Since j advanced past the valid element, j is the 1-based index of the valid element (j-1 + 1)
+            /* 1-based R index of the valid element is (j - 1) + 1 = j */
+            ires[i] = j;
         }
     }
     
